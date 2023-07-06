@@ -49,8 +49,20 @@ function main() {
 		 * @param {MouseEvent} ev
 		 */
 		function onMouseMove(ev) {
-			deltaX += ev.movementX
-			deltaY += ev.movementY
+			if (scale === 1) {
+				return
+			}
+			const rect = image.getBoundingClientRect()
+			const deltaWidth = (rect.width - innerWidth) / 2
+			const deltaHeight = (rect.height - innerHeight) / 2
+			if (deltaWidth > 0) {
+				deltaX += ev.movementX
+				deltaX = Math.min(Math.max(deltaX, -deltaWidth), deltaWidth)
+			}
+			if (deltaHeight > 0) {
+				deltaY += ev.movementY
+				deltaY = Math.min(Math.max(deltaY, -deltaHeight), deltaHeight)
+			}
 			image.style.translate = `${deltaX}px ${deltaY}px`
 		}
 		document.addEventListener('mousemove', onMouseMove)
