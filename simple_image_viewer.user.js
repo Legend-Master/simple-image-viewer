@@ -10,6 +10,7 @@
 // ==/UserScript==
 
 const SCALE_FACTOR = 1.2
+// const TRANSITION_DURATION_MS = 150
 
 function isImagePage() {
 	return (
@@ -26,23 +27,35 @@ function main() {
 
 	document.body.style.overflow = 'hidden'
 	document.body.style.cursor = 'move'
-	image.style.cursor = 'move'
+
+	function applyBasicImageStyle() {
+		image.style.cursor = 'move'
+		// image.style.transition += `, scale ${TRANSITION_DURATION_MS}ms, translate ${TRANSITION_DURATION_MS}ms`
+	}
+	applyBasicImageStyle()
 
 	let scale = 1
 	let deltaX = 0
 	let deltaY = 0
 
 	function updateImageStyle() {
-		image.style.cursor = 'move'
-		image.style.translate = `${deltaX}px ${deltaY}px`
 		image.style.scale = String(scale)
+
+		const deltaWidth = (image.width * scale - innerWidth) / 2
+		const deltaHeight = (image.height * scale - innerHeight) / 2
+		deltaX = deltaWidth > 0 ? Math.min(Math.max(deltaX, -deltaWidth), deltaWidth) : 0
+		deltaY = deltaHeight > 0 ? Math.min(Math.max(deltaY, -deltaHeight), deltaHeight) : 0
+		image.style.translate = `${deltaX}px ${deltaY}px`
 	}
 
 	// Prevent default zoom in / zoom out
 	document.addEventListener('click', (ev) => ev.stopImmediatePropagation(), { capture: true })
 	// Re-apply styles to image since Chrome will override them...
 	// https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/html/image_document.cc;drc=89758767fb0fae96a59967eb47e7921ce49fafcb;l=296
-	window.addEventListener('resize', updateImageStyle)
+	window.addEventListener('resize', () => {
+		applyBasicImageStyle()
+		updateImageStyle()
+	})
 
 	document.addEventListener('mousedown', (ev) => {
 		/**
@@ -52,18 +65,9 @@ function main() {
 			if (scale === 1) {
 				return
 			}
-			const rect = image.getBoundingClientRect()
-			const deltaWidth = (rect.width - innerWidth) / 2
-			const deltaHeight = (rect.height - innerHeight) / 2
-			if (deltaWidth > 0) {
-				deltaX += ev.movementX
-				deltaX = Math.min(Math.max(deltaX, -deltaWidth), deltaWidth)
-			}
-			if (deltaHeight > 0) {
-				deltaY += ev.movementY
-				deltaY = Math.min(Math.max(deltaY, -deltaHeight), deltaHeight)
-			}
-			image.style.translate = `${deltaX}px ${deltaY}px`
+			deltaX += ev.movementX
+			deltaY += ev.movementY
+			updateImageStyle()
 		}
 		document.addEventListener('mousemove', onMouseMove)
 		document.addEventListener(
@@ -85,15 +89,8 @@ function main() {
 		} else {
 			scale *= SCALE_FACTOR
 		}
-		// scale = Math.max(scale, 1)
-		if (scale < 1) {
-			scale = 1
-			deltaX = 0
-			deltaY = 0
-			updateImageStyle()
-		} else {
-			image.style.scale = String(scale)
-		}
+		scale = Math.max(scale, 1)
+		updateImageStyle()
 	})
 }
 
