@@ -44,9 +44,6 @@ function main() {
 
 		// Prevent default zoom in / zoom out
 		document.addEventListener('click', (ev) => ev.stopImmediatePropagation(), { capture: true })
-		// Re-apply styles to image since Chrome will override them...
-		// https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/html/image_document.cc;drc=89758767fb0fae96a59967eb47e7921ce49fafcb;l=296
-		window.addEventListener('resize', updateAllImageStyles)
 	} else {
 		return
 	}
@@ -63,11 +60,27 @@ function main() {
 	function updateImageStyle() {
 		image.style.scale = String(scale)
 
-		const { width, height } = image.getBoundingClientRect()
-		const deltaWidth = (width - innerWidth) / 2
-		const deltaHeight = (height - innerHeight) / 2
-		// const deltaWidth = (Number(image.getAttribute('width')) * scale - innerWidth) / 2
-		// const deltaHeight = (Number(image.getAttribute('height')) * scale - innerHeight) / 2
+		let width
+		let height
+		if (image instanceof SVGElement) {
+			width = Number(image.getAttribute('width'))
+			height = Number(image.getAttribute('height'))
+			const aspectRatio = width / height
+			const widthFitScale = width / innerWidth
+			const heightFitScale = height / innerHeight
+			if (widthFitScale > heightFitScale) {
+				width = innerWidth
+				height = width / aspectRatio
+			} else {
+				height = innerHeight
+				width = height * aspectRatio
+			}
+		} else {
+			width = image.width
+			height = image.height
+		}
+		const deltaWidth = (width * scale - innerWidth) / 2
+		const deltaHeight = (height * scale - innerHeight) / 2
 		deltaX = deltaWidth > 0 ? Math.min(Math.max(deltaX, -deltaWidth), deltaWidth) : 0
 		deltaY = deltaHeight > 0 ? Math.min(Math.max(deltaY, -deltaHeight), deltaHeight) : 0
 		image.style.translate = `${deltaX}px ${deltaY}px`
@@ -82,6 +95,8 @@ function main() {
 	// Do it again on loaded since Chrome will override it on image finishes loading
 	// https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/html/image_document.cc;drc=255b4e7036f1326f2219bd547d3d6dcf76064870;l=404
 	image.addEventListener('load', updateAllImageStyles)
+
+	window.addEventListener('resize', updateAllImageStyles)
 
 	document.addEventListener('mousedown', (ev) => {
 		/**
