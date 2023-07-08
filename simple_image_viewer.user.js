@@ -5,6 +5,11 @@
 // @version        0.1
 // @author         Tony
 // @description    A simple image viewer
+// @icon           https://api.iconify.design/mdi/cursor-move.svg
+// @homepage       https://github.com/Legend-Master/simple-image-viewer
+// @downloadURL    https://github.com/Legend-Master/simple-image-viewer/raw/main/simple_image_viewer.user.js
+// @updateURL      https://github.com/Legend-Master/simple-image-viewer/raw/main/simple_image_viewer.user.js
+// @supportURL     https://github.com/Legend-Master/simple-image-viewer/issues
 // @match          <all_urls>
 // @run-at         document-start
 // @grant          none
