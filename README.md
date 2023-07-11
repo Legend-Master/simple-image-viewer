@@ -6,4 +6,4 @@ A userscript that allows you to zoom and pan images on the default browser image
 
 Note: To make it work on file URLs you need to toggle `Allow access to file URLs` on your user script manager's extension settings
 
-https://github.com/Legend-Master/simple-image-viewer/assets/68118705/c5eee3d6-7e27-437d-bd1b-910de8ad1f05
+https://github.com/Legend-Master/simple-image-viewer/assets/68118705/731c5161-f925-4a11-8c38-4d1242083f82
