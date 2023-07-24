@@ -16,6 +16,7 @@
 // ==/UserScript==
 
 const SCALE_FACTOR = 1.2
+const KEY_MOVE_STEP_PX = 100
 // const TRANSITION_DURATION_MS = 150
 
 /**
@@ -120,6 +121,25 @@ function main() {
 
 	window.addEventListener('resize', updateAllImageStyles)
 
+	/**
+	 * @param {number} dx
+	 * @param {number} dy
+	 */
+	function move(dx, dy) {
+		const { width, height } = getImageSize()
+		const deltaWidth = Math.max((width * scale - innerWidth) / 2, 0)
+		const deltaHeight = Math.max((height * scale - innerHeight) / 2, 0)
+		const maxDeltaX = Math.max(deltaWidth, deltaX)
+		const minDeltaX = Math.min(-deltaWidth, deltaX)
+		const maxDeltaY = Math.max(deltaHeight, deltaY)
+		const minDeltaY = Math.min(-deltaHeight, deltaY)
+		deltaX += dx
+		deltaY += dy
+		deltaX = clamp(deltaX, minDeltaX, maxDeltaX)
+		deltaY = clamp(deltaY, minDeltaY, maxDeltaY)
+		updateImageStyle()
+	}
+
 	document.addEventListener('mousedown', (ev) => {
 		/**
 		 * @param {MouseEvent} ev
@@ -128,18 +148,7 @@ function main() {
 			if (scale === 1) {
 				return
 			}
-			const { width, height } = getImageSize()
-			const deltaWidth = Math.max((width * scale - innerWidth) / 2, 0)
-			const deltaHeight = Math.max((height * scale - innerHeight) / 2, 0)
-			const maxDeltaX = Math.max(deltaWidth, deltaX)
-			const minDeltaX = Math.min(-deltaWidth, deltaX)
-			const maxDeltaY = Math.max(deltaHeight, deltaY)
-			const minDeltaY = Math.min(-deltaHeight, deltaY)
-			deltaX += ev.movementX
-			deltaY += ev.movementY
-			deltaX = clamp(deltaX, minDeltaX, maxDeltaX)
-			deltaY = clamp(deltaY, minDeltaY, maxDeltaY)
-			updateImageStyle()
+			move(ev.movementX, ev.movementY)
 		}
 		document.addEventListener('mousemove', onMouseMove)
 		document.addEventListener(
@@ -148,6 +157,18 @@ function main() {
 			{ once: true }
 		)
 		ev.preventDefault()
+	})
+
+	document.addEventListener('keydown', (ev) => {
+		if (ev.key === 'ArrowUp') {
+			move(0, KEY_MOVE_STEP_PX)
+		} else if (ev.key === 'ArrowDown') {
+			move(0, -KEY_MOVE_STEP_PX)
+		} else if (ev.key === 'ArrowLeft') {
+			move(KEY_MOVE_STEP_PX, 0)
+		} else if (ev.key === 'ArrowRight') {
+			move(-KEY_MOVE_STEP_PX, 0)
+		}
 	})
 
 	document.addEventListener(
