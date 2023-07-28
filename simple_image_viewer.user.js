@@ -54,6 +54,7 @@ function main() {
 			)
 		}
 	} else if (
+		document.body &&
 		document.body.childElementCount === 1 &&
 		document.body.firstChild instanceof HTMLImageElement
 	) {
