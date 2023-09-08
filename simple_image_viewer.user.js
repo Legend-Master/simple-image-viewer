@@ -202,8 +202,11 @@ function main() {
 				const centerX = left + width / 2
 				const centerY = top + height / 2
 				const deltaScale = targetScale - scale
-				const dx = ((centerX - clamp(ev.clientX, left, right)) / scale) * deltaScale
-				const dy = ((centerY - clamp(ev.clientY, top, bottom)) / scale) * deltaScale
+				// const dx = ((centerX - clamp(ev.clientX, left, right)) / scale) * deltaScale
+				// const dy = ((centerY - clamp(ev.clientY, top, bottom)) / scale) * deltaScale
+				const isCursorOutSide = (ev.clientX < left || ev.clientX > right) || (ev.clientY < top || ev.clientY > bottom)
+				const dx = isCursorOutSide ? 0 : ((centerX - clamp(ev.clientX, left, right)) / scale) * deltaScale
+				const dy = isCursorOutSide ? 0 : ((centerY - clamp(ev.clientY, top, bottom)) / scale) * deltaScale
 				if (isZoomIn) {
 					deltaX += dx
 					deltaY += dy
