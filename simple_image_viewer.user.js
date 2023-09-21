@@ -17,7 +17,7 @@
 
 const SCALE_FACTOR = 1.2
 const KEY_MOVE_STEP_PX = 100
-// const TRANSITION_DURATION_MS = 150
+const TRANSITION_DURATION_MS = 150
 
 /**
  * @param {number} num
@@ -75,8 +75,39 @@ function main() {
 
 	function applyBasicImageStyle() {
 		image.style.cursor = 'move'
-		// image.style.transition += `, scale ${TRANSITION_DURATION_MS}ms, translate ${TRANSITION_DURATION_MS}ms`
 	}
+
+	function updateImageStyle() {
+		image.style.scale = String(scale)
+		image.style.translate = `${deltaX}px ${deltaY}px`
+	}
+
+	const initialTransition = image.style.transition
+	const transitionStyles = [
+		`scale ${TRANSITION_DURATION_MS}ms`,
+		`translate ${TRANSITION_DURATION_MS}ms`,
+	]
+	initialTransition && transitionStyles.push(initialTransition)
+	/**
+	 * @param {boolean} enableTransitions
+	 */
+	function addImageTransitionStyle(enableTransitions) {
+		image.style.transition = enableTransitions ? transitionStyles.join(',') : initialTransition
+	}
+
+	function updateAllImageStyles() {
+		applyBasicImageStyle()
+		updateImageStyle()
+		// Shouldn't need to do it here since we'll add it on zooming only
+		// addImageTransitionStyle()
+	}
+
+	applyBasicImageStyle()
+	// Do it again on loaded since Chrome will override it on image finishes loading
+	// https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/html/image_document.cc;drc=255b4e7036f1326f2219bd547d3d6dcf76064870;l=404
+	image.addEventListener('load', updateAllImageStyles)
+
+	window.addEventListener('resize', updateAllImageStyles)
 
 	function getImageSize() {
 		let width
@@ -105,23 +136,6 @@ function main() {
 		return { width, height }
 	}
 
-	function updateImageStyle() {
-		image.style.scale = String(scale)
-		image.style.translate = `${deltaX}px ${deltaY}px`
-	}
-
-	function updateAllImageStyles() {
-		applyBasicImageStyle()
-		updateImageStyle()
-	}
-
-	applyBasicImageStyle()
-	// Do it again on loaded since Chrome will override it on image finishes loading
-	// https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/html/image_document.cc;drc=255b4e7036f1326f2219bd547d3d6dcf76064870;l=404
-	image.addEventListener('load', updateAllImageStyles)
-
-	window.addEventListener('resize', updateAllImageStyles)
-
 	/**
 	 * @param {number} dx
 	 * @param {number} dy
@@ -139,6 +153,7 @@ function main() {
 		deltaX = clamp(deltaX, minDeltaX, maxDeltaX)
 		deltaY = clamp(deltaY, minDeltaY, maxDeltaY)
 		updateImageStyle()
+		addImageTransitionStyle(false)
 	}
 
 	document.addEventListener('mousedown', (ev) => {
@@ -227,6 +242,7 @@ function main() {
 				scale = targetScale
 			}
 			updateImageStyle()
+			addImageTransitionStyle(true)
 			ev.preventDefault()
 		},
 		{ passive: false }
