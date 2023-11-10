@@ -41,8 +41,6 @@ function main() {
 	if (document.documentElement instanceof SVGElement) {
 		image = document.documentElement
 
-		image.style.overflow = 'hidden'
-		image.style.cursor = 'move'
 		image.style.height = '100%'
 		image.style.maxWidth = '100%'
 		image.style.margin = 'auto'
@@ -59,15 +57,14 @@ function main() {
 		document.body.firstChild instanceof HTMLImageElement
 	) {
 		image = document.body.firstChild
-
-		document.body.style.overflow = 'hidden'
-		document.body.style.cursor = 'move'
-
 		// Prevent default zoom in / zoom out
 		document.addEventListener('click', (ev) => ev.stopImmediatePropagation(), { capture: true })
 	} else {
 		return
 	}
+
+	document.documentElement.style.overflow = 'hidden'
+	document.documentElement.style.cursor = 'move'
 
 	let scale = 1
 	let deltaX = 0
