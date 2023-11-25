@@ -33,6 +33,17 @@ function clamp(num, min, max) {
 	return Math.min(max, Math.max(min, num))
 }
 
+/**
+ * @param {string | null | undefined} str
+ * @param {string} suffix
+ */
+function removeSuffix(str, suffix) {
+	if (str?.endsWith(suffix)) {
+		return str.substring(0, str.length - suffix.length)
+	}
+	return str
+}
+
 function main() {
 	/**
 	 * @type {HTMLImageElement | SVGElement}
@@ -46,10 +57,11 @@ function main() {
 		image.style.margin = 'auto'
 
 		if (!image.getAttribute('viewBox')) {
-			image.setAttribute(
-				'viewBox',
-				`0 0 ${image.getAttribute('width')} ${image.getAttribute('height')}`
-			)
+			const width = removeSuffix(image.getAttribute('width'), 'px')
+			const height = removeSuffix(image.getAttribute('height'), 'px')
+			if (width && height) {
+				image.setAttribute('viewBox', `0 0 ${width} ${height}`)
+			}
 		}
 	} else if (
 		document.body &&
@@ -110,8 +122,8 @@ function main() {
 		let width
 		let height
 		if (image instanceof SVGElement) {
-			width = Number(image.getAttribute('width'))
-			height = Number(image.getAttribute('height'))
+			width = Number(removeSuffix(image.getAttribute('width'), 'px'))
+			height = Number(removeSuffix(image.getAttribute('height'), 'px'))
 			const aspectRatio = width / height
 			const widthFitScale = width / innerWidth
 			const heightFitScale = height / innerHeight
