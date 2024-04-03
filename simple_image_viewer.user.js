@@ -10,6 +10,7 @@
 // @downloadURL    https://github.com/Legend-Master/simple-image-viewer/raw/main/simple_image_viewer.user.js
 // @updateURL      https://github.com/Legend-Master/simple-image-viewer/raw/main/simple_image_viewer.user.js
 // @supportURL     https://github.com/Legend-Master/simple-image-viewer/issues
+// @match          <all_urls>
 // @match          *://*/*
 // @run-at         document-start
 // @grant          none
