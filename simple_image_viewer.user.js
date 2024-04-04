@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name           Simple Image Viewer
 // @namespace      https://github.com/Legend-Master
-// @version        0.5
+// @version        0.6
 // @author         Tony
 // @description    A simple image viewer that allows you to zoom and pan images on the default browser image page with mouse
 // @icon           https://api.iconify.design/mdi/cursor-move.svg
